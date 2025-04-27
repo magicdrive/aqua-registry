@@ -1,0 +1,27 @@
+packages:
+  - name: magicdrive/enma
+    type: github_release
+    repo_owner: magicdrive
+    repo_name: enma
+    asset: enma_{{.OS}}_{{.Arch}}.tar.gz
+    description: Yet another integration software with file monitoring
+    files:
+      - name: enma
+
+  - name: magicdrive/kirke
+    type: github_release
+    repo_owner: magicdrive
+    repo_name: kirke
+    asset: kirke_{{.OS}}_{{.Arch}}.tar.gz
+    description: JSON to Golang Struct Generator
+    files:
+      - name: kirke
+
+  - name: magicdrive/goreg
+    type: github_release
+    repo_owner: magicdrive
+    repo_name: goreg
+    asset: goreg_{{.OS}}_{{.Arch}}.tar.gz
+    description: Golang import order stabilizer
+    files:
+      - name: goreg
