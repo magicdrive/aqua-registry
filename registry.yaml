@@ -3,8 +3,7 @@ packages:
     type: github_release
     repo_owner: magicdrive
     repo_name: enma
-    version_prefix: ""
-    asset: enma_{{.Version}}_{{.OS}}_{{.Arch}}.tar.gz
+    asset: enma_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
     description: Yet another integration software with file monitoring
     files:
       - name: enma
@@ -13,8 +12,7 @@ packages:
     type: github_release
     repo_owner: magicdrive
     repo_name: kirke
-    version_prefix: ""
-    asset: kirke_{{.Version}}_{{.OS}}_{{.Arch}}.tar.gz
+    asset: kirke_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
     description: JSON to Golang Struct Generator
     files:
       - name: kirke
@@ -23,8 +21,7 @@ packages:
     type: github_release
     repo_owner: magicdrive
     repo_name: goreg
-    version_prefix: ""
-    asset: goreg_{{.Version}}_{{.OS}}_{{.Arch}}.tar.gz
+    asset: goreg_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
     description: Golang import order stabilizer
     files:
       - name: goreg
