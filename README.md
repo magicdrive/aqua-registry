@@ -30,7 +30,7 @@ And then allowing policy.
 aqua policy allow ./aqua-policy.yaml
 ```
 
-Add this registry to your `aqua.yaml`:
+Add this registry to your `aqua.yaml` (replace placeholder):
 
 ```yaml
 registries:
@@ -41,7 +41,7 @@ registries:
     ref: {{Version}}
 ```
 
-Then you can install packages like:
+Then you can install packages like (replace placeholder):
 
 ```yaml
 packages:
