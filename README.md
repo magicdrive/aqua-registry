@@ -1,4 +1,4 @@
-# [WIP] magicdrive/aqua-registry
+# magicdrive/aqua-registry
 
 This is a registry for [aqua](https://aquaproj.github.io/) to install CLI tools developed by [magicdrive](https://github.com/magicdrive).
 
