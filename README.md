@@ -38,18 +38,18 @@ registries:
     repo_owner: magicdrive
     repo_name: aqua-registry
     path: registry.yaml
-    ref: {{Version}}
+    ref: v1.0.2
 ```
 
 Then you can install packages like (replace placeholder):
 
 ```yaml
 packages:
-  - name: magicdrive/enma@{{Version}}
+  - name: magicdrive/enma@[target-version]
     registry: custom
-  - name: magicdrive/kirke@{{Version}}
+  - name: magicdrive/kirke@[target-version]
     registry: custom
-  - name: magicdrive/goreg@v{{Version}}
+  - name: magicdrive/goreg@[target-version]
     registry: custom
 ```
 
