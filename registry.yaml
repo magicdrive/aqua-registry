@@ -25,3 +25,12 @@ packages:
     description: Golang import order stabilizer
     files:
       - name: goreg
+
+  - name: magicdrive/ark
+    type: github_release
+    repo_owner: magicdrive
+    repo_name: ark
+    asset: ark_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
+    description: Yet another alternate directory represent text generator
+    files:
+      - name: ark
