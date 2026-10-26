@@ -42,7 +42,7 @@ registries:
     type: github_content
     repo_owner: magicdrive
     repo_name: aqua-registry
-    ref: v1.0.2 # replace with the latest tag
+    ref: v1.1.0 # replace with the latest tag
     path: registry.yaml
 ```
 
