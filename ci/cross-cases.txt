@@ -1,0 +1,47 @@
+# <package> <version> <GOOS/GOARCH|all> <expect>
+#
+# expect:
+#   ok          aqua downloads the asset, verifies its checksum and unarchives it
+#   unsupported aqua refuses the platform (supported_envs)
+#   no_asset    aqua refuses the version (no Release asset was published)
+#
+# "all" expands to darwin/amd64 darwin/arm64 linux/amd64 linux/arm64
+# windows/amd64 windows/arm64. Versions cover the latest release and the
+# boundaries of every version_overrides entry in registry.yaml.
+
+magicdrive/ark          v6.7.2      all            ok
+magicdrive/ark          v0.0.2      linux/amd64    ok
+
+magicdrive/enma         v2.1.2      all            ok
+magicdrive/enma         v1.2.10     windows/amd64  ok
+magicdrive/enma         v1.1.5      linux/amd64    ok
+magicdrive/enma         v0.0.3      linux/amd64    ok
+
+magicdrive/goreg        v1.3.11     all            ok
+magicdrive/goreg        v1.2.1      linux/amd64    ok
+magicdrive/goreg        v1.2.0      linux/amd64    ok
+
+magicdrive/kjak         v0.0.4      all            ok
+magicdrive/kjak         v0.0.1      linux/amd64    ok
+
+magicdrive/git-parallel v1.0.3      darwin/arm64   ok
+magicdrive/git-parallel v1.0.3      linux/amd64    ok
+magicdrive/git-parallel v1.0.3      windows/amd64  unsupported
+magicdrive/git-parallel v1.0.2      linux/amd64    no_asset
+
+magicdrive/hephaestus   v1.2.0      all            ok
+magicdrive/hephaestus   v0.1.0-rc.2 linux/amd64    ok
+
+magicdrive/kirke        v1.2.8      all            ok
+magicdrive/kirke        v1.2.1      windows/amd64  ok
+magicdrive/kirke        v1.0.5      linux/amd64    ok
+magicdrive/kirke        v1.0.5      windows/amd64  unsupported
+
+magicdrive/t            v1.2.1      darwin/amd64   ok
+magicdrive/t            v1.2.1      darwin/arm64   ok
+magicdrive/t            v1.2.1      linux/amd64    ok
+magicdrive/t            v1.2.1      linux/arm64    ok
+magicdrive/t            v1.2.1      windows/amd64  unsupported
+magicdrive/t            v1.2.1      windows/arm64  unsupported
+magicdrive/t            v1.2.0-rc.1 linux/amd64    ok
+magicdrive/t            v1.1.1      linux/amd64    no_asset

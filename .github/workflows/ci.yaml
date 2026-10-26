@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  # aqua v2.64.0 (commit of the tag) for the registry JSON schema.
+  AQUA_SCHEMA_URL: https://raw.githubusercontent.com/aquaproj/aqua/954fd59f789f69445ddb13903721de8b9e9a05b2/json-schema/registry.json
+
+jobs:
+  validate:
+    name: Validate registry
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Validate registry.yaml against the aqua JSON schema
+        run: |
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/registry-schema.json" "$AQUA_SCHEMA_URL"
+          pipx run --spec check-jsonschema==0.29.4 check-jsonschema \
+            --schemafile "$RUNNER_TEMP/registry-schema.json" registry.yaml
+
+      - name: Lint CI scripts
+        run: shellcheck ci/*.sh
+
+      - name: Install aqua
+        run: ci/install-aqua.sh "$RUNNER_TEMP/aqua-bin"
+
+      - name: Resolve and install every package for every platform
+        run: AQUA="$RUNNER_TEMP/aqua-bin/aqua" ci/cross-install.sh
+
+  install:
+    name: Install and run (${{ matrix.os }})
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04 # linux/amd64
+          - ubuntu-24.04-arm # linux/arm64
+          - macos-15 # darwin/arm64
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Install aqua
+        run: ci/install-aqua.sh "$RUNNER_TEMP/aqua-bin"
+
+      - name: Install the latest release of every package and check versions
+        run: AQUA="$RUNNER_TEMP/aqua-bin/aqua" ci/smoke.sh
