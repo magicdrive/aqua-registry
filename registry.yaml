@@ -1,36 +1,231 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/aquaproj/aqua/main/json-schema/registry.json
+#
+# aqua registry for CLI tools developed by magicdrive.
+#
+# Every package keeps the ID it had before (`name: magicdrive/<repo>`).
+# Asset names, archive formats and checksum file names changed over time
+# (GoReleaser -> Hephaestus), so each package lists `version_overrides`
+# derived from the actual GitHub Release assets. The first override whose
+# `version_constraint` matches the requested version wins.
 packages:
   - name: magicdrive/enma
     type: github_release
     repo_owner: magicdrive
     repo_name: enma
-    asset: enma_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
-    description: Yet another integration software with file monitoring
+    description: Yet another event-driven command runner
     files:
       - name: enma
+    version_constraint: "false"
+    version_overrides:
+      # v0.0.3 - v1.1.1: versioned checksum file.
+      - version_constraint: semver("<= 1.1.1")
+        asset: enma_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        checksum:
+          type: github_release
+          asset: enma_{{trimV .Version}}_checksums.txt
+          algorithm: sha256
+      # v1.1.5 - v1.2.10: tar.gz on every OS.
+      - version_constraint: semver("<= 1.2.10")
+        asset: enma_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        checksum:
+          type: github_release
+          asset: enma_checksums.txt
+          algorithm: sha256
+      # v2.0.0 and later: zip on Windows.
+      - version_constraint: "true"
+        asset: enma_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        overrides:
+          - goos: windows
+            format: zip
+        checksum:
+          type: github_release
+          asset: enma_checksums.txt
+          algorithm: sha256
 
   - name: magicdrive/kirke
     type: github_release
     repo_owner: magicdrive
     repo_name: kirke
-    asset: kirke_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
-    description: JSON to Golang Struct Generator
+    description: Yet another JSON to Go Struct Converter
     files:
       - name: kirke
+    version_constraint: "false"
+    version_overrides:
+      # v0.0.1 - v1.0.5: no Windows assets, versioned checksum file.
+      - version_constraint: semver("<= 1.0.5")
+        asset: kirke_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        supported_envs:
+          - darwin
+          - linux
+        checksum:
+          type: github_release
+          asset: kirke_{{trimV .Version}}_checksums.txt
+          algorithm: sha256
+      # v1.0.6 - v1.2.1: versioned checksum file.
+      - version_constraint: semver("<= 1.2.1")
+        asset: kirke_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        checksum:
+          type: github_release
+          asset: kirke_{{trimV .Version}}_checksums.txt
+          algorithm: sha256
+      # v1.2.2 and later.
+      - version_constraint: "true"
+        asset: kirke_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        checksum:
+          type: github_release
+          asset: kirke_checksums.txt
+          algorithm: sha256
 
   - name: magicdrive/goreg
     type: github_release
     repo_owner: magicdrive
     repo_name: goreg
-    asset: goreg_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
-    description: Golang import order stabilizer
+    description: Yet another alternate goimports, gofmt tool
     files:
       - name: goreg
+    version_constraint: "false"
+    version_overrides:
+      # v0.0.1 - v1.2.0: versioned checksum file.
+      - version_constraint: semver("<= 1.2.0")
+        asset: goreg_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        checksum:
+          type: github_release
+          asset: goreg_{{trimV .Version}}_checksums.txt
+          algorithm: sha256
+      # v1.2.1 and later.
+      - version_constraint: "true"
+        asset: goreg_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        checksum:
+          type: github_release
+          asset: goreg_checksums.txt
+          algorithm: sha256
 
   - name: magicdrive/ark
     type: github_release
     repo_owner: magicdrive
     repo_name: ark
-    asset: ark_{{trimV .Version}}_{{.OS}}_{{.Arch}}.tar.gz
-    description: Yet another alternate directory represent text generator
+    description: Code intelligence engine for AI coding agents
     files:
       - name: ark
+    version_constraint: "false"
+    version_overrides:
+      # v0.0.2 and later: tar.gz on every OS (including Windows).
+      - version_constraint: "true"
+        asset: ark_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        checksum:
+          type: github_release
+          asset: ark_checksums.txt
+          algorithm: sha256
+
+  - name: magicdrive/kjak
+    type: github_release
+    repo_owner: magicdrive
+    repo_name: kjak
+    description: Deliver one notification to many destinations (Slack, Discord and e-mail) from the command line
+    files:
+      - name: kjak
+    version_constraint: "false"
+    version_overrides:
+      # v0.0.1: checksum file without the project prefix.
+      - version_constraint: Version == "v0.0.1"
+        asset: kjak_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        overrides:
+          - goos: windows
+            format: zip
+        # Only windows/amd64 is published; Windows on Arm runs it under emulation.
+        windows_arm_emulation: true
+        checksum:
+          type: github_release
+          asset: checksums.txt
+          algorithm: sha256
+      # v0.0.2 and later.
+      - version_constraint: "true"
+        asset: kjak_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        overrides:
+          - goos: windows
+            format: zip
+        windows_arm_emulation: true
+        checksum:
+          type: github_release
+          asset: kjak_checksums.txt
+          algorithm: sha256
+
+  - name: magicdrive/git-parallel
+    type: github_release
+    repo_owner: magicdrive
+    repo_name: git-parallel
+    description: Run the command in parallel much to multiple repositories
+    files:
+      - name: git-parallel
+    version_constraint: "false"
+    version_overrides:
+      # v1.0.2 and earlier have no release assets.
+      - version_constraint: semver("<= 1.0.2")
+        no_asset: true
+      # v1.0.3 and later: one platform-independent Bash script archive.
+      - version_constraint: "true"
+        asset: git-parallel_{{trimV .Version}}_noarch.{{.Format}}
+        format: tar.gz
+        supported_envs:
+          - darwin
+          - linux
+        checksum:
+          type: github_release
+          asset: git-parallel_{{trimV .Version}}_checksums.txt
+          algorithm: sha256
+
+  - name: magicdrive/hephaestus
+    type: github_release
+    repo_owner: magicdrive
+    repo_name: hephaestus
+    description: Forge release artifacts into reliable distributions
+    files:
+      - name: hephaestus
+    version_constraint: "false"
+    version_overrides:
+      # v0.1.0-rc.2 and later: zip on Windows.
+      - version_constraint: "true"
+        asset: hephaestus_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        overrides:
+          - goos: windows
+            format: zip
+        checksum:
+          type: github_release
+          asset: hephaestus_checksums.txt
+          algorithm: sha256
+
+  - name: magicdrive/t
+    type: github_release
+    repo_owner: magicdrive
+    repo_name: t
+    description: Lazy tmux wrapper (requires tmux)
+    files:
+      - name: t
+    version_constraint: "false"
+    version_overrides:
+      # v1.1.1 and earlier have no release assets.
+      - version_constraint: semver("<= 1.1.1")
+        no_asset: true
+      # v1.2.0-rc.1 and later: Bash script, no Windows build.
+      - version_constraint: "true"
+        asset: t_{{trimV .Version}}_{{.OS}}_{{.Arch}}.{{.Format}}
+        format: tar.gz
+        supported_envs:
+          - darwin
+          - linux
+        checksum:
+          type: github_release
+          asset: t_checksums.txt
+          algorithm: sha256
