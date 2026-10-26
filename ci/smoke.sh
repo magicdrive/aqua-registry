@@ -58,7 +58,7 @@ while read -r pkg version; do
     t)
       # t has no --version; --help prints USAGE and exits 1, and the
       # version is recorded in the bundled man page (.TH line).
-      check "t --help" "USAGE:" "$(cd "$work" && t --help 2>&1 || true)"
+      check "t --help" "USAGE:" "$(cd "$work" && { t --help 2>&1 || true; })"
       check "t.1 .TH" "\"$version\"" "$(grep '^\.TH' "$(dirname "$path")/t.1")"
       ;;
     git-parallel)
