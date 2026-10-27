@@ -74,26 +74,7 @@ while read -r pkg version; do
 done <<< "$packages"
 
 # Cross-check aqua-checksums.json against the checksum files of the Releases.
-while read -r id sum; do
-  rest=${id#github_release/github.com/}
-  repo=${rest%%/*}; rest=${rest#*/}
-  repo=$repo/${rest%%/*}; rest=${rest#*/}
-  tag=${rest%%/*}; asset=${rest#*/}
-  v=${tag#v}
-  name=${repo#*/}
-  for f in "${name}_checksums.txt" "${name}_${v}_checksums.txt"; do
-    if published=$(curl -fsSL --retry 3 "https://github.com/$repo/releases/download/$tag/$f" 2>/dev/null); then
-      break
-    fi
-  done
-  want=$(printf '%s\n' "$published" | awk -v a="$asset" '$2 == a { print toupper($1) }')
-  if [ -n "$want" ] && [ "$want" = "$sum" ]; then
-    echo "PASS checksum $repo $tag $asset"
-  else
-    echo "FAIL checksum $repo $tag $asset: aqua=$sum release=${want:-missing}"
-    failures=$((failures + 1))
-  fi
-done < <(jq -r '.checksums[] | "\(.id) \(.checksum)"' "$work/aqua-checksums.json")
+check_release_checksums "$work/aqua-checksums.json"
 
 echo "failures: $failures"
 [ "$failures" -eq 0 ]

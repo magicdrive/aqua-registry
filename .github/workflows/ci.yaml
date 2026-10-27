@@ -38,6 +38,9 @@ jobs:
       - name: Lint CI scripts
         run: shellcheck ci/*.sh
 
+      - name: Test CI scripts
+        run: ci/test-lib.sh
+
       - name: Install aqua
         run: ci/install-aqua.sh "$RUNNER_TEMP/aqua-bin"
 
