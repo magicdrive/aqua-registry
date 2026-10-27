@@ -74,3 +74,23 @@ jobs:
 
       - name: Install the latest release of every package and check versions
         run: AQUA="$RUNNER_TEMP/aqua-bin/aqua" ci/smoke.sh
+
+  ci-gate:
+    # The one check a ruleset requires: it waits for every job above and
+    # fails unless each one succeeded (skipped and cancelled fail too), so
+    # adding or renaming a job never changes the required check's name.
+    name: ci-gate
+    if: always()
+    needs: [validate, install]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Every job succeeded
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "results: $RESULTS"
+          [ -n "$RESULTS" ] || { echo "::error::no job results"; exit 1; }
+          for r in $RESULTS; do
+            [ "$r" = success ] || { echo "::error::a CI job did not succeed ($r)"; exit 1; }
+          done
