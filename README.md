@@ -136,6 +136,9 @@ CI (`.github/workflows/ci.yaml`) runs on every pull request:
 - `ci/smoke.sh` installs the latest version of every package on Linux
   (amd64, arm64) and macOS (arm64), runs each command, checks the reported
   version and compares the recorded checksums with the Release checksum files.
+- `ci/test-lib.sh` tests that checksum comparison with a stub `curl`: a
+  mismatch, or an `aqua-checksums.json` that is missing, unparsable or empty,
+  must fail.
 
 When you add a package or a new release changes its asset names, update
 `registry.yaml`, `ci/cross-cases.txt` and the version list in `ci/smoke.sh`.
