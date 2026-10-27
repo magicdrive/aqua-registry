@@ -68,3 +68,53 @@ check_release_checksums() {
     fi
   done <<< "$entries"
 }
+
+# run_bounded <seconds> <command>...: runs the command, killed after <seconds>
+# (status 124, as timeout(1) reports it). Without timeout(1) the command runs
+# unbounded and the CI job's timeout-minutes is the only limit.
+run_bounded() {
+  local limit=$1
+  shift
+  if command -v timeout > /dev/null; then
+    timeout -k 10 "$limit" "$@"
+  else
+    "$@"
+  fi
+}
+
+# classify_aqua_failure <status> <log>: prints why an aqua command failed,
+# from its exit status and the messages aqua v2.64.0 logs:
+#   timeout            status 124 or 137 (run_bounded killed it)
+#   tool_missing       status 126 or 127 (aqua is not found or not executable)
+#   checksum_mismatch  error="checksum is invalid"
+#   permission         permission denied, operation not permitted, read-only
+#   network            refused, unresolved, reset or timed out connections,
+#                      proxy errors, retries given up, 5xx, rate limits
+#   archive            the downloaded file cannot be unarchived
+#   not_found          404, no asset for the version, unsupported platform
+#   registry           the registry or the configuration cannot be parsed
+#   unknown            anything else (including status 0)
+# The first matching class wins, in the order above.
+classify_aqua_failure() {
+  local status=$1 log=$2 errs
+  case "$status" in
+    124 | 137) echo timeout; return 0 ;;
+    126 | 127) echo tool_missing; return 0 ;;
+  esac
+  errs=$(grep -E ' ERR |command not found|No such file or directory' "$log" 2>/dev/null || true)
+  if grep -q -F 'error="checksum is invalid"' <<< "$errs"; then
+    echo checksum_mismatch
+  elif grep -q -i -E 'permission denied|operation not permitted|read-only file system' <<< "$errs"; then
+    echo permission
+  elif grep -q -i -E 'connection refused|no such host|i/o timeout|TLS handshake|proxyconnect|connection reset|network is unreachable|giving up after|context deadline exceeded|: 5[0-9][0-9] |rate limit' <<< "$errs"; then
+    echo network
+  elif grep -q -E 'identify the format|unarchive|invalid header|not a valid zip|unexpected EOF' <<< "$errs"; then
+    echo archive
+  elif grep -q -E '404 Not Found|no asset is released|is not found|isn.t supported on this environment' <<< "$errs"; then
+    echo not_found
+  elif grep -q -E 'parse the registry|yaml: |unmarshal|configuration file' <<< "$errs"; then
+    echo registry
+  else
+    echo unknown
+  fi
+}

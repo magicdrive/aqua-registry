@@ -132,7 +132,16 @@ CI (`.github/workflows/ci.yaml`) runs on every pull request:
   entry) by overriding the target platform with `AQUA_GOOS` / `AQUA_GOARCH`.
   Each case downloads the real asset and verifies its checksum; unsupported
   platforms and versions without assets must be rejected, and a tampered
-  checksum must fail.
+  checksum must fail (`ci/tamper.sh`).
+- `ci/tamper.sh` passes only when aqua rejects the tampered checksum itself
+  (`error="checksum is invalid"`, exit status 1, nothing unarchived). An
+  install that fails for another reason fails the test and names the reason:
+  network, permission, archive, not found, registry, missing aqua or timeout.
+- `ci/test-tamper.sh` injects each of those failures into `ci/tamper.sh` with
+  the real aqua (a nonexistent version, a broken registry, aqua missing from
+  `PATH`, an unreachable proxy, a read-only `AQUA_ROOT_DIR`, a corrupt
+  archive served locally, a hanging install) and checks that each one fails
+  with its class.
 - `ci/smoke.sh` installs the latest version of every package on Linux
   (amd64, arm64) and macOS (arm64), runs each command, checks the reported
   version and compares the recorded checksums with the Release checksum files.
