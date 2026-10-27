@@ -47,6 +47,9 @@ jobs:
       - name: Resolve and install every package for every platform
         run: AQUA="$RUNNER_TEMP/aqua-bin/aqua" ci/cross-install.sh
 
+      - name: Test that the tamper check fails on failures other than the checksum
+        run: AQUA="$RUNNER_TEMP/aqua-bin/aqua" ci/test-tamper.sh
+
   install:
     name: Install and run (${{ matrix.os }})
     needs: validate

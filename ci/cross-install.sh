@@ -58,17 +58,10 @@ while read -r pkg version envs expect; do
   unset AQUA_GOOS AQUA_GOARCH
 done < "$cases"
 
-# Negative test: a wrong checksum must make the installation fail.
-dir=$work/tamper
-mkdir -p "$dir"
-write_config "$dir" true "magicdrive/t@v1.2.1"
-(cd "$dir" && "$AQUA" update-checksum) > "$dir/log.txt" 2>&1
-sed -i.bak -E 's/"checksum": "[0-9A-F]{64}"/"checksum": "0000000000000000000000000000000000000000000000000000000000000000"/' "$dir/aqua-checksums.json"
-if (cd "$dir" && AQUA_ROOT_DIR=$dir/root "$AQUA" install --all) >> "$dir/log.txt" 2>&1; then
-  echo "FAIL tampered checksum was accepted"
+# Negative test: a wrong checksum must make the installation fail, and fail
+# because of the checksum (ci/tamper.sh).
+if ! AQUA=$AQUA REGISTRY=$REGISTRY "$here/tamper.sh"; then
   failures=$((failures + 1))
-else
-  echo "PASS tampered checksum is rejected"
 fi
 
 echo "cases: $n, failures: $failures"
